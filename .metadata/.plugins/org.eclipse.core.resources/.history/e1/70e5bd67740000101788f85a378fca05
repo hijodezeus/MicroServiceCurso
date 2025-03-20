@@ -1,0 +1,11 @@
+package com.proa.services;
+
+import java.util.List;
+
+import com.proa.entities.Order;
+
+public interface IService {
+	boolean insert(long idClient, double total);
+	List<Order> SelectAll();
+	boolean delete(long id);
+}

@@ -1,0 +1,60 @@
+package com.proa.app.services;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
+
+import com.proa.app.dao.IOrderDAO;
+import com.proa.app.entities.Order;
+import com.proa.app.exceptions.ClientNotFoundException;
+import com.proa.app.exceptions.OrderNotFoundException;
+import com.proa.app.feign.IFeignClientm;
+
+@Service
+public class ServiceImpl implements IService{
+	
+	@Autowired
+	private IOrderDAO dao;
+	
+	@Autowired
+	private IFeignClientm feign;
+	
+	@Override
+	public boolean insert(long idCLient, double total) throws ClientNotFoundException {
+		try {
+			var response = feign.selectById(idCLient);
+			var order = new Order();
+			order.setNameClient(response.getName());
+			order.setEmailClient(response.getEmail());
+			order.setAddressClient(response.getAddress());
+			order.setDate(LocalDate.now());
+			order.setTotal(total);
+			
+			var result = dao.save(order);
+			return result!=null;
+		}catch(NotFound ex){
+			throw new ClientNotFoundException(ex.getMessage());
+		}
+	}
+
+	@Override
+	public List<Order> SelectAll() {
+		// TODO Auto-generated method stub
+		return (List<Order>)dao.findAll();
+	}
+
+	@Override
+	 public boolean delete(long id) throws OrderNotFoundException{
+	  if (dao.existsById(id)) {
+	   dao.deleteById(id);
+	   return true;
+	  } else {
+	   throw new OrderNotFoundException("Client " + id + "  no existe");
+	  }
+	 }
+
+}

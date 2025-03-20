@@ -1,0 +1,5 @@
+package com.proa.entities;
+
+public class Order {
+
+}
