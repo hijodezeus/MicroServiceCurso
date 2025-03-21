@@ -1,5 +1,0 @@
-package com.proa.dao;
-
-public interface IOrderDAO {
-
-}
